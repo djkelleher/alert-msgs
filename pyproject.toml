@@ -1,26 +1,22 @@
 [tool.poetry]
 name = "alert_msgs"
 version = "0.1.1"
-description = "Utilities for creating HTML and Markdown alert messages."
+description = "Easily construct and send formatted emails and Slack alerts."
 authors = ["Dan Kelleher <kelleherjdan@gmail.com>"]
 include = ["alert_msgs/styles/*"]
 
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
-pydantic = "^1.9.0"
+pydantic = "^2.3.0"
 premailer = "^3.10.0"
 dominate = "^2.6.0"
 requests = "^2.28.1"
-pdoc3 = "^0.10.0"
 ezloggers = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
 black = "^21.12b0"
-jupyter = "^1.0.0"
-python-dotenv = "^0.19.2"
-ipykernel = "^6.15.1"
 requests-mock = "^1.9.3"
 
 [build-system]
