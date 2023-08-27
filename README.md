@@ -19,17 +19,20 @@ components = [
     Table(
         rows=[
             {
-                "Process": str(uuid4()),
-                "Status": random.randint(0, 5),
-                "Finished": random.choice([True, False]),
+                "Process": "thing-1,
+                "Status": 0,
+                "Finished": True,
+            },
+            {
+                "Process": "thing-2",
+                "Status": 1,
+                "Finished": False,
             }
-            for _ in range(10)
         ],
-        caption="Amazing Data",
+        caption="Process Status",
     ),
 ]
 
-# TODO don't expose these function. Extent send_alert args.
 # Send via method-specific functions.
 send_email(subject="Test Alert", components=components)
 send_slack_message(components)

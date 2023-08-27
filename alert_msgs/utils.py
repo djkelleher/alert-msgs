@@ -18,7 +18,7 @@ def use_inline_tables(tables: Sequence[Table], inline_tables_max_rows: int) -> b
     Returns:
         bool: Whether inline tables should be used.
     """
-    if tables and sum(len(t.content) for t in tables) < inline_tables_max_rows:
+    if tables and (sum(len(t.content) for t in tables) < inline_tables_max_rows):
         return True
     return False
 
@@ -33,15 +33,11 @@ def attach_tables(tables: Sequence[Table], attachments_max_size_mb: int) -> bool
     Returns:
         bool: Whether files can should be attached.
     """
-    if (
-        tables
-        and (
-            tables_size_mb := (sum(sys.getsizeof(t.content) for t in tables) / 10**6)
-        )
-        < attachments_max_size_mb
-    ):
-        logger.debug("Adding %i tables as attachments.", len(tables))
-        return True
+    if tables:
+        tables_size_mb = sum(sys.getsizeof(t.content) for t in tables) / 10**6
+        if tables_size_mb < attachments_max_size_mb:
+            logger.debug("Adding %i tables as attachments.", len(tables))
+            return True
     logger.debug(
         "Can not add tables as attachments because size %fmb exceeds max %f",
         tables_size_mb,

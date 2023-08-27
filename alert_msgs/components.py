@@ -72,7 +72,8 @@ class ContentType(Enum):
 
 
 def content_type_css_color(content_type: ContentType) -> str:
-    """Get an appropriate CSS color for a given ContentType."""
+    """Get an appropriate CSS color for a given `ContentType`."""
+    # TODO add this to settings.
     colors = {
         ContentType.INFO: "black",
         ContentType.WARNING: "#ffca28;",
@@ -83,7 +84,7 @@ def content_type_css_color(content_type: ContentType) -> str:
 
 
 def font_size_css(font_size: FontSize) -> str:
-    """Get an appropriate CSS font size for a given FontSize."""
+    """Get an appropriate CSS font size for a given `FontSize`."""
     fonts = {
         FontSize.SMALL: "16px",
         FontSize.MEDIUM: "18px",
@@ -93,6 +94,8 @@ def font_size_css(font_size: FontSize) -> str:
 
 
 class Text(MsgComp):
+    """A component that displays formatted text."""
+
     _content_tags = {
         ContentType.INFO: d.div,
         ContentType.WARNING: d.p,
@@ -106,11 +109,10 @@ class Text(MsgComp):
         content_type: ContentType = ContentType.INFO,
         font_size: FontSize = FontSize.MEDIUM,
     ):
-        """A component that displays formatted text.
-
+        """
         Args:
             content (str): The text that should be displayed in the component.
-            content_type (ContentType, optional): Type/tone of text. Defaults to ContentType.INFO.
+            content_type (ContentType, optional): Type of text. Defaults to ContentType.INFO.
             font_size (FontSize, optional): Size of font. Defaults to FontSize.MEDIUM.
         """
         self.content = str(content)
@@ -138,15 +140,17 @@ class Text(MsgComp):
         return self.content
 
 
-# Inline format based on text lengths
 class Map(MsgComp):
-    def __init__(self, content: Dict[str, Any], inline: Optional[bool] = None):
-        """A component that displays formatted key/value pairs.
+    """A component that displays formatted key/value pairs."""
 
+    def __init__(self, content: Dict[str, Any], inline: Optional[bool] = None):
+        """
         Args:
             content (Dict[str, Any]): The key/value pairs that should be displayed.
+            inline (Optional[bool], optional): Whether to put each field/value pair on its own line. Defaults to None.
         """
         self.content = content
+        # TODO automatic inlining based on text lengths.
         self.inline = inline if inline is not None else alert_settings.inline_kv
 
     def html(self) -> d.html_tag:
@@ -181,14 +185,15 @@ class Map(MsgComp):
 
 
 class Table(MsgComp):
+    """A component that displays tabular data."""
+
     def __init__(
         self,
         body: Sequence[Dict[str, Any]],
         title: Optional[str] = None,
         header: Optional[Sequence[str]] = None,
     ):
-        """A component that displays tabular data.
-
+        """
         Args:
             body (Sequence[Dict[str, Any]]): Iterable of row dicts (column: value).
             title (Optional[str], optional): A title to display above the table body. Defaults to None.
@@ -284,6 +289,8 @@ class Table(MsgComp):
 
 
 class LineBreak(MsgComp):
+    """A line beak (to be inserted between components)."""
+
     def __init__(self, n_break: int = 1) -> None:
         self.n_break = n_break
 

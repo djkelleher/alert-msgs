@@ -10,12 +10,12 @@ from .slack import send_slack_message
 
 
 class BufferedAlerts:
+    """Buffer alerts and concatenate into one message."""
+
     def __init__(self, sleep_t: int = 10) -> None:
-        # TODO more advanced rate limiting.
-        # TODO concat messages with separator
-        # TODO add identifier to alert groups (specified in constructor)
+        # TODO finish this. more advanced rate limiting. add identifier to alert groups (specified in constructor)
         self.sleep_t = sleep_t
-        self._allerts_to_send = []
+        self._alerts_to_send = []
         self._t_last_msg_sent = 0
 
     def send_alert(

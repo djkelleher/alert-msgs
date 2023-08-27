@@ -4,6 +4,8 @@ from pydantic import BaseSettings, validator
 
 
 class EmailSettings(BaseSettings):
+    """Settings for sending email alerts."""
+
     addr: str
     password: str
     receiver_addr: str
@@ -17,6 +19,8 @@ class EmailSettings(BaseSettings):
 
 
 class SlackSettings(BaseSettings):
+    """Settings for sending Slack alerts."""
+
     webhook: str
     attachment_max_size_mb: int = 20
     inline_tables_max_rows: int = 200
@@ -26,6 +30,8 @@ class SlackSettings(BaseSettings):
 
 
 class AlertSettings(BaseSettings):
+    """Settings for sending alerts."""
+
     alert_methods: Optional[Union[str, Sequence[str]]] = None
     inline_kv: bool = False
 
