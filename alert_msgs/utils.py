@@ -1,7 +1,7 @@
 import sys
 from typing import Sequence
 
-from ready_logger import get_logger
+from ezloggers import get_logger
 
 from .components import Table
 
