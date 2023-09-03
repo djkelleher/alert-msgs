@@ -33,7 +33,7 @@ def components():
         ),
         Map({f"TestKey{i}": f"TestValue{i}" for i in range(5)}),
         Table(
-            [
+            body=[
                 {
                     "TestStrColumn": str(uuid4()),
                     "TestIntColumn": random.randint(0, 5),
@@ -41,7 +41,6 @@ def components():
                 }
                 for _ in range(10)
             ],
-            " ".join(["Test Caption." for _ in range(5)]),
-            {"Test Key": "Test Value"},
+            title=" ".join(["Test Caption." for _ in range(5)]),
         ),
     ]

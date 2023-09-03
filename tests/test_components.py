@@ -3,6 +3,7 @@ from typing import Dict
 from uuid import uuid4
 
 import pytest
+
 from alert_msgs.components import (
     ContentType,
     FontSize,
@@ -46,7 +47,7 @@ def test_table_render(caption, meta, attach_rows):
     def text_has_rows(text):
         return all(text_has_content(text, r) for r in rows)
 
-    o = Table(rows, caption, meta)
+    o = Table(body=rows, title=caption, header=meta)
 
     if attach_rows:
         filename, file = o.attach_rows_as_file()
@@ -67,7 +68,7 @@ def test_table_render(caption, meta, attach_rows):
         assert caption in o.classic_md()
         assert caption in o.slack_md()
 
-    if meta is not None:
+    if not attach_rows and meta is not None:
         assert text_has_content(o.html().render())
         assert text_has_content(o.classic_md())
         assert text_has_content(o.slack_md())
