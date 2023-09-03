@@ -14,6 +14,7 @@ from premailer import transform
 from .settings import alert_settings
 
 
+# TODO List component.
 class MsgComp(ABC):
     """A structured component of a message."""
 
@@ -216,7 +217,8 @@ class Table(MsgComp):
         Returns:
             Tuple[str, StringIO]: Name of file and file object.
         """
-        stem = self.title.body[:50].replace(" ", "_") if self.title else "table"
+        stem = self.title.content[:50].replace(" ", "_") if self.title else "table"
+        # TODO switch to xxhash
         body_id = md5(pickle.dumps(self.body)).hexdigest()
         filename = f"{stem}_{body_id}.csv"
         file = StringIO()
