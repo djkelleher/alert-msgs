@@ -12,6 +12,7 @@ class EmailSettings(BaseSettings):
     receiver_addr: str
     attachment_max_size_mb: int = 20
     inline_tables_max_rows: int = 2000
+    # TODO don't use gmail.
     smtp_server: str = "smtp.gmail.com"
     smtp_port: int = 465
 
@@ -21,7 +22,9 @@ class EmailSettings(BaseSettings):
 class SlackSettings(BaseSettings):
     """Settings for sending Slack alerts."""
 
-    webhook: str
+    bot_token: str
+    app_token: str
+    channel: Optional[str] = None
     attachment_max_size_mb: int = 20
     inline_tables_max_rows: int = 200
 

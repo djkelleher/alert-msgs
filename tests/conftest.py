@@ -2,6 +2,7 @@ import random
 from uuid import uuid4
 
 import pytest
+
 from alert_msgs import ContentType, FontSize, Map, Table, Text
 
 
@@ -17,9 +18,19 @@ def pytest_addoption(parser):
         help="Password for Email login.",
     )
     parser.addoption(
-        "--slack-webhook",
+        "--slack-bot-token",
         action="store",
-        help="Slack webhook URL to send test message.",
+        help="Slack bot token.",
+    )
+    parser.addoption(
+        "--slack-app-token",
+        action="store",
+        help="Slack app token.",
+    )
+    parser.addoption(
+        "--slack-channel",
+        action="store",
+        help="Slack channel.",
     )
 
 
