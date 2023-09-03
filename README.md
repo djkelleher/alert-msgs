@@ -2,6 +2,9 @@
 
 Configuration is done through environment variables. See [settings.py](./alert_msgs/settings.py)
 
+## Install
+`pip install alert_msgs`
+
 ## Examples
 
 ```python
