@@ -1,7 +1,7 @@
 from typing import Optional, Sequence, Union
 
-from pydantic import validator
-from pydantic_settings import BaseSettings
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class EmailSettings(BaseSettings):
@@ -15,8 +15,7 @@ class EmailSettings(BaseSettings):
     smtp_server: str = "smtp.gmail.com"
     smtp_port: int = 465
 
-    class Config:
-        env_prefix = "alert_msgs_email_"
+    model_config = SettingsConfigDict(env_prefix="alert_msgs_email_")
 
 
 class SlackSettings(BaseSettings):
@@ -26,8 +25,7 @@ class SlackSettings(BaseSettings):
     attachment_max_size_mb: int = 20
     inline_tables_max_rows: int = 200
 
-    class Config:
-        env_prefix = "alert_msgs_slack_"
+    model_config = SettingsConfigDict(env_prefix="alert_msgs_slack_")
 
 
 class AlertSettings(BaseSettings):
@@ -36,10 +34,9 @@ class AlertSettings(BaseSettings):
     alert_methods: Optional[Union[str, Sequence[str]]] = None
     inline_kv: bool = False
 
-    class Config:
-        env_prefix = "alert_msgs_"
+    model_config = SettingsConfigDict(env_prefix="alert_msgs_")
 
-    @validator("alert_methods")
+    @field_validator("alert_methods")
     def extract_methods(cls, alert_methods):
         if alert_methods is None:
             return []
