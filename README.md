@@ -2,10 +2,10 @@
 
 Configuration is done through environment variables. See [settings.py](./alert_msgs/settings.py)
 
-## Install
+### Install
 `pip install alert_msgs`
 
-## Examples
+### Examples
 
 ```python
 from alert_msgs import ContentType, FontSize, Map, Text, Table, send_alert, send_slack_message, send_email
