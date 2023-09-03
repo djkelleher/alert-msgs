@@ -22,7 +22,7 @@ components = [
     Table(
         rows=[
             {
-                "Process": "thing-1,
+                "Process": "thing-1",
                 "Status": 0,
                 "Finished": True,
             },
