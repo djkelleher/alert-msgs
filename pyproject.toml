@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "alert_msgs"
-version = "0.1.2"
+version = "0.2.0"
 description = "Easily construct and send formatted emails and Slack alerts."
 authors = ["Dan Kelleher <kelleherjdan@gmail.com>"]
 include = ["alert_msgs/styles/*"]
