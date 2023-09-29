@@ -8,6 +8,30 @@ from .components import Table
 logger = get_logger("alert-msgs")
 
 
+def singleton(cls):
+    return cls()
+
+
+@singleton
+class Emoji:
+    # there is no green up arrow :(
+    red_down_arrow = "🔻"
+    red_exclamation = "❗"
+    red_x = "❌"
+    hollow_red_circle = "⭕"
+    red_circle = "🔴"
+    yellow_circle = "🟡"
+    blue_circle = "🔵"
+    purple_circle = "🟣"
+    brown_circle = "🟤"
+    green_circle = "🟢"
+    green_check = "✅"
+    warning = "⚠️"
+    rocket = "🚀"
+    fire = "🔥"
+    turtle = "🐢"
+
+
 def use_inline_tables(tables: Sequence[Table], inline_tables_max_rows: int) -> bool:
     """Check if tables are small enough to be displayed inline in the message.
 
