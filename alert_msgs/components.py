@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from dominate import document
 from dominate import tags as d
 from premailer import transform
+from tabulate import tabulate
+from toolz import partition_all
 
 from .settings import alert_settings
 
@@ -269,24 +271,10 @@ class Table(MsgComp):
         if self._attachment:
             data.append(self._attachment.slack_md())
         if self.body:
-            rows = [dict(zip(self.header, self.header))] + self.body
-            # column width is length of longest string + a space of padding on both sides.
-            columns_widths = {
-                c: max(len(row[c]) for row in rows) + 2 for c in self.header
-            }
-            data.append(
-                "\n".join(
-                    [
-                        "|".join(
-                            [
-                                f"{{: ^{columns_widths[col]}}}".format(row[col])
-                                for col in self.header
-                            ]
-                        )
-                        for row in rows
-                    ]
-                )
-            )
+            # Slack can only render up to 13 rows in a table.
+            for rows in partition_all(13, self.body):
+                table = tabulate(rows, headers="keys", tablefmt="simple_grid")
+                data.append(f"```\n{table}\n```")
         return "\n\n".join(data).strip()
 
 
