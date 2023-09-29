@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Union
 
 from .components import MsgComp, Text
 from .emails import send_email
-from .settings import alert_settings
+from .settings import default_alert_settings
 from .slack import send_slack_message
 
 
@@ -54,15 +54,15 @@ def send_alert(
             funcs.append(send_slack_message)
     else:
         # check env vars for method settings.
-        if "slack" in alert_settings.alert_methods:
+        if "slack" in default_alert_settings.alert_methods:
             funcs.append(send_slack_message)
-        if "email" in alert_settings.alert_methods:
+        if "email" in default_alert_settings.alert_methods:
             funcs.append(send_email)
     if not funcs:
         raise ValueError(
             f"Unknown alert method '{methods}'. Valid choices: slack, email. Can not send alert."
         )
-    return all(func(components=components, **kwargs) for func in funcs)
+    return all([func(components=components, **kwargs) for func in funcs])
 
 
 def send_text_alert_cmd() -> bool:

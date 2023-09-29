@@ -54,4 +54,4 @@ class AlertSettings(BaseSettings):
         return alert_methods
 
 
-alert_settings = AlertSettings()
+default_alert_settings = AlertSettings()

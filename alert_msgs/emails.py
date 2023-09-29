@@ -15,6 +15,8 @@ def send_email(
     components: Sequence[MsgComp],
     subject: str = "Alert From alert-msgs",
     retries: int = 1,
+    email_settings: Optional[EmailSettings] = None,
+    **_,
 ) -> bool:
     """Send an email.
 
@@ -22,11 +24,12 @@ def send_email(
         components (Sequence[MsgComp]): Components used to construct the message.
         subject (str, optional): Subject line. Defaults to "Alert From alert-msgs".
         retries (int, optional): Number of times to retry sending. Defaults to 1.
+        email_settings (Optional[EmailSettings]): Settings for sending email alerts. Defaults to EmailSettings().
 
     Returns:
         bool: Whether the message was sent successfully or not.
     """
-    settings = EmailSettings()
+    settings = email_settings or EmailSettings()
     tables = [t for t in components if isinstance(t, Table)]
     # check if table CSVs should be added as attachments.
     attachment_tables = (

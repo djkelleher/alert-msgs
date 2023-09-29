@@ -13,7 +13,7 @@ from premailer import transform
 from tabulate import tabulate
 from toolz import partition_all
 
-from .settings import alert_settings
+from .settings import default_alert_settings
 
 
 # TODO List component.
@@ -154,7 +154,7 @@ class Map(MsgComp):
         """
         self.content = content
         # TODO automatic inlining based on text lengths.
-        self.inline = inline if inline is not None else alert_settings.inline_kv
+        self.inline = inline if inline is not None else default_alert_settings.inline_kv
 
     def html(self) -> d.html_tag:
         kv_tag = d.span("\t") if self.inline else d.div
