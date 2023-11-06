@@ -27,8 +27,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["black"]
-test = ["pytest"]
+dev = ["black", "pytest"]
 
 
 [build-system]
