@@ -1,0 +1,36 @@
+from typing import List, Optional, Union
+
+from pydantic import BaseModel, PositiveInt, field_validator
+
+
+class Email(BaseModel):
+    """Configuration for email alerts."""
+
+    addr: str
+    password: str
+    receiver_addr: Union[str, List[str]]
+    attachment_max_size_mb: PositiveInt = 20
+    inline_tables_max_rows: PositiveInt = 2000
+    # TODO don't use gmail.
+    smtp_server: str = "smtp.gmail.com"
+    smtp_port: PositiveInt = 465
+
+    @field_validator("receiver_addr")
+    @classmethod
+    def receiver_addr_listify(cls, v: str) -> List[str]:
+        if isinstance(v, str):
+            return [v]
+        return v
+
+
+class Slack(BaseModel):
+    """Configuration for Slack alerts."""
+
+    bot_token: str
+    app_token: str
+    channel: Optional[str] = None
+    attachment_max_size_mb: PositiveInt = 20
+    inline_tables_max_rows: PositiveInt = 200
+
+
+MsgDst = Union[Email, Slack]

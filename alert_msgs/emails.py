@@ -7,43 +7,40 @@ from io import StringIO
 from typing import Dict, Optional, Sequence
 
 from .components import MsgComp, Table, render_components_html
-from .settings import EmailSettings
+from .msgdst import Email
 from .utils import attach_tables, logger, use_inline_tables
 
 
 def send_email(
     components: Sequence[MsgComp],
+    send_to: Email,
     subject: str = "Alert From alert-msgs",
     retries: int = 1,
-    email_settings: Optional[EmailSettings] = None,
     **_,
 ) -> bool:
     """Send an email.
 
     Args:
         components (Sequence[MsgComp]): Components used to construct the message.
+        send_to (Optional[Email]): How/where to send the message.
         subject (str, optional): Subject line. Defaults to "Alert From alert-msgs".
         retries (int, optional): Number of times to retry sending. Defaults to 1.
-        email_settings (Optional[EmailSettings]): Settings for sending email alerts. Defaults to EmailSettings().
-
     Returns:
         bool: Whether the message was sent successfully or not.
     """
-    settings = email_settings or EmailSettings()
     tables = [t for t in components if isinstance(t, Table)]
     # check if table CSVs should be added as attachments.
     attachment_tables = (
         dict([table.attach_rows_as_file() for table in tables])
         if len(tables)
-        and attach_tables(tables, settings.attachment_max_size_mb)
-        and not use_inline_tables(tables, settings.inline_tables_max_rows)
+        and attach_tables(tables, send_to.attachment_max_size_mb)
+        and not use_inline_tables(tables, send_to.inline_tables_max_rows)
         else {}
     )
     # generate HTML from components.
     body = render_components_html(components)
     message = MIMEMultipart("mixed")
-    message["From"] = settings.addr
-    message["To"] = settings.receiver_addr
+    message["From"] = send_to.addr
     message["Subject"] = subject
     message.attach(MIMEText(body, "html"))
 
@@ -64,13 +61,13 @@ def send_email(
                 p.add_header("Content-Disposition", f"attachment; filename={filename}")
                 message.attach(p)
         with smtplib.SMTP_SSL(
-            host=settings.smtp_server,
-            port=settings.smtp_port,
+            host=send_to.smtp_server,
+            port=send_to.smtp_port,
             context=ssl.create_default_context(),
         ) as smtp:
             for _ in range(retries + 1):
                 try:
-                    smtp.login(settings.addr, settings.password)
+                    smtp.login(send_to.addr, send_to.password)
                     smtp.send_message(message)
                     logger.info("Email sent successfully.")
                     return True
@@ -81,8 +78,13 @@ def send_email(
         )
         return False
 
-    if try_send_message(attachment_tables):
-        return True
-    # try sending again, but with tables as attachments.
-    subject += f" ({len(attachment_tables)} Failed Attachments)"
-    return try_send_message()
+    sent_ok = []
+    for addr in send_to.receiver_addr:
+        message["To"] = addr
+        if try_send_message(attachment_tables):
+            sent_ok.append(True)
+        else:
+            # try sending again, but with tables as attachments.
+            subject += f" ({len(attachment_tables)} Failed Attachments)"
+            sent_ok.append(try_send_message())
+    return all(sent_ok)

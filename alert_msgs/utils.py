@@ -5,7 +5,7 @@ from ezloggers import get_logger
 
 from .components import Table
 
-logger = get_logger("alert-msgs")
+logger = get_logger("alert-msgs", stdout=True)
 
 
 def singleton(cls):

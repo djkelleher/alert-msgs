@@ -2,7 +2,6 @@ import csv
 import pickle
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from hashlib import md5
 from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -10,10 +9,11 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from dominate import document
 from dominate import tags as d
 from premailer import transform
+
+# TODO switch to prettytable
 from tabulate import tabulate
 from toolz import partition_all
-
-from .settings import default_alert_settings
+from xxhash import xxh32
 
 
 # TODO List component.
@@ -146,15 +146,15 @@ class Text(MsgComp):
 class Map(MsgComp):
     """A component that displays formatted key/value pairs."""
 
-    def __init__(self, content: Dict[str, Any], inline: Optional[bool] = None):
+    def __init__(self, content: Dict[str, Any], inline: bool = False):
         """
         Args:
             content (Dict[str, Any]): The key/value pairs that should be displayed.
-            inline (Optional[bool], optional): Whether to put each field/value pair on its own line. Defaults to None.
+            inline (bool, optional): Whether to put each field/value pair on its own line. Defaults to False.
         """
         self.content = content
         # TODO automatic inlining based on text lengths.
-        self.inline = inline if inline is not None else default_alert_settings.inline_kv
+        self.inline = inline
 
     def html(self) -> d.html_tag:
         kv_tag = d.span("\t") if self.inline else d.div
@@ -220,8 +220,7 @@ class Table(MsgComp):
             Tuple[str, StringIO]: Name of file and file object.
         """
         stem = self.title.content[:50].replace(" ", "_") if self.title else "table"
-        # TODO switch to xxhash
-        body_id = md5(pickle.dumps(self.body)).hexdigest()
+        body_id = xxh32(pickle.dumps(self.body)).hexdigest()
         filename = f"{stem}_{body_id}.csv"
         file = StringIO()
         writer = csv.DictWriter(file, fieldnames=self.header)
