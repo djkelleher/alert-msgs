@@ -67,7 +67,7 @@ def send_email(
         ) as smtp:
             for _ in range(retries + 1):
                 try:
-                    smtp.login(send_to.addr, send_to.password)
+                    smtp.login(send_to.addr, send_to.password.get_secret_value())
                     smtp.send_message(message)
                     logger.info("Email sent successfully.")
                     return True

@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import Optional, Sequence, Union
 
+from pydantic import SecretStr
 from slack_bolt import App
 from toolz import partition_all
 
@@ -10,9 +11,9 @@ from .utils import logger
 
 
 @lru_cache
-def get_app(bot_token: str):
+def get_app(bot_token: SecretStr):
     """Return the App instance."""
-    return App(token=bot_token)
+    return App(token=bot_token.get_secret_value())
 
 
 def try_post_message(
