@@ -31,6 +31,3 @@ class Slack(BaseModel):
     channel: Optional[str] = None
     attachment_max_size_mb: PositiveInt = 20
     inline_tables_max_rows: PositiveInt = 200
-
-
-MsgDst = Union[Email, Slack]

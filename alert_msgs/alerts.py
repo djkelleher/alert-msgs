@@ -3,10 +3,12 @@ from time import time
 from typing import Sequence, Union
 
 from .components import MsgComp
-from .msgdst import Email, MsgDst, Slack
+from .config import Email, Slack
 from .emails import send_email
 from .slack import send_slack_message
 from .utils import logger
+
+MsgDst = Union[Email, Slack]
 
 
 class BufferedAlerts:

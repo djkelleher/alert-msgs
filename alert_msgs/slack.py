@@ -6,7 +6,7 @@ from slack_bolt import App
 from toolz import partition_all
 
 from .components import MsgComp, render_components_md
-from .msgdst import Slack
+from .config import Slack
 from .utils import logger
 
 
