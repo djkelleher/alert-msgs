@@ -17,7 +17,7 @@ dependencies = [
     "premailer",
     "dominate",
     "requests",
-    "ezloggers",
+    "quicklogs",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "slack-bolt",
@@ -28,7 +28,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["black", "pytest"]
-
 
 [build-system]
 requires = ["setuptools>=43.0.0", "setuptools-scm", "wheel"]
