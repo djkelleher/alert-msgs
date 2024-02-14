@@ -1,16 +1,22 @@
 ## Easily construct and send formatted emails and Slack alerts.
 
-Configuration is done through environment variables. See [settings.py](./alert_msgs/settings.py)
-
 ### Install
-`pip install alert_msgs`
+```bash
+pip install alert_msgs
+```
 
-If using Slack as an alert destination, you will need to set up a [Slack App](https://api.slack.com/apps?new_app=1) and get a bot token configured with OAuth permissions.   
-1. Create New App -> From Scratch (give it a name, select your workspace)
+If using Slack as an alert destination, you will need to set up a [Slack App](https://api.slack.com/apps?new_app=1) and get a bot token configured with OAuth permissions.
+1. Go to [Slack Apps](https://api.slack.com/apps?new_app=1). Click "Create New App" -> "From Scratch" (give it a name, select your workspace)
 2. Navigate to the "OAuth & Permissions" on the left sidebar and scroll down to the "Bot Token Scopes" section. Add `chat:write` and `file:write` OAuth scopes.
 3. Scroll up to the top of the OAuth & Permissions page and click "Install App to Workspace".
 4. Copy the "Bot User OAuth Token" from the "OAuth & Permissions" page. This is the value that should be used for the `bot_token` parameter of [Slack](./alert_msgs/config.py#L26) config.
 5. In Slack, go to your channel and click the down arrow next to your channel name at the top. Click "Integrations" -> "Add apps" -> select the app you just made.
+
+### Usage
+[send_alert](./alert_msgs/alerts.py#L35) is the high-level/easiest way to send alerts.    
+Alerts are composed of one or more messages, where each message is composed of one or more [components](./alert_msgs/components.py).   
+Alerts can be sent to one or more Slack and/or Email destinations. See [destinations](./alert_msgs/destinations.py) for configuration.   
+
 
 ### Examples
 
