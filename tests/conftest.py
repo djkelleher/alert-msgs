@@ -23,11 +23,6 @@ def pytest_addoption(parser):
         help="Slack bot token.",
     )
     parser.addoption(
-        "--slack-app-token",
-        action="store",
-        help="Slack app token.",
-    )
-    parser.addoption(
         "--slack-channel",
         action="store",
         help="Slack channel.",
