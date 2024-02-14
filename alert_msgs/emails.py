@@ -12,23 +12,24 @@ from .utils import attach_tables, logger, use_inline_tables
 
 
 def send_email(
-    components: Sequence[MsgComp],
+    content: Sequence[MsgComp],
     send_to: Email,
     subject: str = "Alert From alert-msgs",
     retries: int = 1,
     **_,
 ) -> bool:
+    # TODO allow arbitrary attachment files.
     """Send an email.
 
     Args:
-        components (Sequence[MsgComp]): Components used to construct the message.
+        content (Sequence[MsgComp]): Components used to construct the message.
         send_to (Optional[Email]): How/where to send the message.
         subject (str, optional): Subject line. Defaults to "Alert From alert-msgs".
         retries (int, optional): Number of times to retry sending. Defaults to 1.
     Returns:
         bool: Whether the message was sent successfully or not.
     """
-    tables = [t for t in components if isinstance(t, Table)]
+    tables = [t for t in content if isinstance(t, Table)]
     # check if table CSVs should be added as attachments.
     attachment_tables = (
         dict([table.attach_rows_as_file() for table in tables])
@@ -38,9 +39,9 @@ def send_email(
         else {}
     )
     # generate HTML from components.
-    body = render_components_html(components)
+    body = render_components_html(content)
     message = MIMEMultipart("mixed")
-    message["From"] = send_to.addr
+    message["From"] = send_to.sender_addr
     message["Subject"] = subject
     message.attach(MIMEText(body, "html"))
 
@@ -67,7 +68,7 @@ def send_email(
         ) as smtp:
             for _ in range(retries + 1):
                 try:
-                    smtp.login(send_to.addr, send_to.password.get_secret_value())
+                    smtp.login(send_to.sender_addr, send_to.password.get_secret_value())
                     smtp.send_message(message)
                     logger.info("Email sent successfully.")
                     return True

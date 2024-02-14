@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 from pydantic import BaseModel, PositiveInt, SecretStr, field_validator
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel, PositiveInt, SecretStr, field_validator
 class Email(BaseModel):
     """Configuration for email alerts."""
 
-    addr: str
+    sender_addr: str
     password: SecretStr
     receiver_addr: Union[str, List[str]]
     attachment_max_size_mb: PositiveInt = 20
@@ -27,7 +27,6 @@ class Slack(BaseModel):
     """Configuration for Slack alerts."""
 
     bot_token: SecretStr
-    app_token: SecretStr
-    channel: Optional[str] = None
+    channel: str
     attachment_max_size_mb: PositiveInt = 20
     inline_tables_max_rows: PositiveInt = 200
