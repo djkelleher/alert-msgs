@@ -7,7 +7,7 @@ from io import StringIO
 from typing import Dict, Optional, Sequence
 
 from .components import MsgComp, Table, render_components_html
-from .config import Email
+from .destinations import Email
 from .utils import attach_tables, logger, use_inline_tables
 
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from toolz import partition_all
 
 from .components import MsgComp, render_components_md
-from .config import Slack
+from .destinations import Slack
 from .utils import logger
 
 
