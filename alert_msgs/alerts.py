@@ -33,14 +33,14 @@ class BufferedAlerts:
 
 
 def send_alert(
-    components: Sequence[MsgComp],
+    content: Sequence[MsgComp],
     send_to: Union[MsgDst, Sequence[MsgDst]],
     **kwargs,
 ) -> bool:
     """Send a message via Slack and/or Email.
 
     Args:
-        components (Sequence[MsgComp]): The components to include in the message.
+        content (Sequence[MsgComp]): The content to include in the message.
         send_to (Union[MsgDst, Sequence[MsgDst]]): Where/how the message should be sent.
 
     Returns:
@@ -51,11 +51,9 @@ def send_alert(
     sent_ok = []
     for st in send_to:
         if isinstance(st, Slack):
-            sent_ok.append(
-                send_slack_message(components=components, send_to=st, **kwargs)
-            )
+            sent_ok.append(send_slack_message(content=content, send_to=st, **kwargs))
         elif isinstance(st, Email):
-            sent_ok.append(send_email(components=components, send_to=st, **kwargs))
+            sent_ok.append(send_email(content=content, send_to=st, **kwargs))
         else:
             logger.error(
                 "Unknown alert destination type (%s): %s. Valid choices: Email, Slack.",

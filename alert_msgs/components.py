@@ -336,6 +336,6 @@ def render_components_md(components: Sequence[MsgComp], slack_format: bool) -> s
 
 
 def _components_list(components: Sequence[MsgComp]) -> List[MsgComp]:
-    if isinstance(components, MsgComp):
+    if isinstance(components, (MsgComp, str)):
         components = [components]
     return [Text(comp) if isinstance(comp, str) else comp for comp in components]
