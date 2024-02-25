@@ -3,6 +3,7 @@ from functools import lru_cache
 from io import BytesIO
 from pathlib import Path
 from typing import Optional, Sequence, Union
+from urllib.error import URLError
 
 from pydantic import SecretStr
 from slack_bolt import App
@@ -64,13 +65,21 @@ def send_slack_message(
 
     def upload_file(content, filename):
         # Upload the file to Slack
-        file_id = app.client.files_upload(
-            # channel=send_to.channel,
-            channels=send_to.channel,
-            file=content,
-            filename=filename,
+        for _ in range(3):
+            try:
+                file_id = app.client.files_upload(
+                    # channel=send_to.channel,
+                    channels=send_to.channel,
+                    file=content,
+                    filename=filename,
+                )
+                file_ids.append(file_id["file"]["id"])
+                return
+            except URLError:
+                pass
+        logger.warning(
+            "Failed to upload file `%s` to Slack channel %s.", filename, send_to.channel
         )
-        file_ids.append(file_id["file"]["id"])
 
     kwargs = {}
     if attachment_files:
