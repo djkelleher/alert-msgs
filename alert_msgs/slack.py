@@ -62,27 +62,29 @@ def send_slack_message(
         content = [content]
     app = get_app(send_to.bot_token)
     file_ids = []
-
-    def upload_file(content, filename):
-        # Upload the file to Slack
-        for _ in range(3):
-            try:
-                file_id = app.client.files_upload(
-                    # channel=send_to.channel,
-                    channels=send_to.channel,
-                    file=content,
-                    filename=filename,
-                )
-                file_ids.append(file_id["file"]["id"])
-                return
-            except URLError:
-                pass
-        logger.warning(
-            "Failed to upload file `%s` to Slack channel %s.", filename, send_to.channel
-        )
-
     kwargs = {}
     if attachment_files:
+
+        def upload_file(content, filename):
+            # Upload the file to Slack
+            for _ in range(3):
+                try:
+                    file_id = app.client.files_upload(
+                        # channel=send_to.channel,
+                        channels=send_to.channel,
+                        file=content,
+                        filename=filename,
+                    )
+                    file_ids.append(file_id["file"]["id"])
+                    return
+                except URLError:
+                    pass
+            logger.warning(
+                "Failed to upload file `%s` to Slack channel %s.",
+                filename,
+                send_to.channel,
+            )
+
         if not isinstance(attachment_files, (list, tuple)):
             attachment_files = [attachment_files]
         attachment_files = [Path(f) for f in attachment_files]
