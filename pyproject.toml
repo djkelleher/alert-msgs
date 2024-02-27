@@ -1,6 +1,6 @@
 [project]
 name = "alert_msgs"
-version = "0.4.2"
+version = "0.4.4"
 description = "Easily construct and send formatted emails and Slack alerts."
 authors = [{ name = "Dan Kelleher", email = "kelleherjdan@gmail.com" }]
 license = { text = "MIT" }
@@ -21,7 +21,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "slack-bolt",
-    "tabulate",
+    "prettytable",
     "toolz",
     "xxhash",
 ]

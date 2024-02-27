@@ -1,6 +1,7 @@
 import csv
 import pickle
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from enum import Enum, auto
 from io import StringIO
 from pathlib import Path
@@ -9,11 +10,10 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 from dominate import document
 from dominate import tags as d
 from premailer import transform
-
-# TODO switch to prettytable
-from tabulate import tabulate
-from toolz import partition_all
+from prettytable import PrettyTable
 from xxhash import xxh32
+
+from .utils import as_code_block
 
 
 # TODO List component.
@@ -263,17 +263,30 @@ class Table(MsgComp):
             data.append("\n".join(["|".join(row) for row in table_rows]))
         return "\n\n".join(data).strip()
 
-    def slack_md(self) -> str:
+    def slack_md(self, float_format: str = ".3") -> str:
+        if not self.body:
+            return ""
+        columns = defaultdict(list)
+        for row in self.body:
+            for k, v in row.items():
+                columns[k].append(v)
+        # Slack can't render very many rows in a single table.
+        max_rows = 15
+        table_slices = defaultdict(PrettyTable)
+        for column, values in columns.items():
+            for i in range(0, len(values), max_rows):
+                table = table_slices[i]
+                table.add_column(column, values[i : i + max_rows])
         data = []
         if self.title:
-            data.append(self.title.slack_md())
+            data.append(table_slices.pop(0).get_string(title=self.title.content))
+        for table in table_slices.values():
+            if float_format:
+                table.float_format = float_format
+            data.append(table.get_string())
+        data = [as_code_block(d) for d in data]
         if self._attachment:
             data.append(self._attachment.slack_md())
-        if self.body:
-            # Slack can only render up to 13 rows in a table.
-            for rows in partition_all(13, self.body):
-                table = tabulate(rows, headers="keys", tablefmt="simple_grid")
-                data.append(f"```\n{table}\n```")
         return "\n\n".join(data).strip()
 
 

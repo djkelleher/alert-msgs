@@ -3,13 +3,16 @@ from typing import Sequence
 
 from quicklogs import get_logger
 
-from .components import Table
-
 logger = get_logger("alert-msgs", stdout=True)
 
 
 def singleton(cls):
     return cls()
+
+
+def as_code_block(text: str) -> str:
+    """Format text as code block."""
+    return "```\n" + text + "\n```"
 
 
 @singleton
@@ -32,7 +35,7 @@ class Emoji:
     turtle = "🐢"
 
 
-def use_inline_tables(tables: Sequence[Table], inline_tables_max_rows: int) -> bool:
+def use_inline_tables(tables: Sequence["Table"], inline_tables_max_rows: int) -> bool:
     """Check if tables are small enough to be displayed inline in the message.
 
     Args:
@@ -47,7 +50,7 @@ def use_inline_tables(tables: Sequence[Table], inline_tables_max_rows: int) -> b
     return False
 
 
-def attach_tables(tables: Sequence[Table], attachments_max_size_mb: int) -> bool:
+def attach_tables(tables: Sequence["Table"], attachments_max_size_mb: int) -> bool:
     """Check if tables are small enough to be attached as files.
 
     Args:

@@ -63,10 +63,10 @@ def test_table_render(caption, meta, attach_rows):
         assert text_has_rows(o.classic_md())
         assert text_has_rows(o.slack_md())
 
-    if caption is not None:
-        assert caption in o.html().render()
-        assert caption in o.classic_md()
-        assert caption in o.slack_md()
+        if caption is not None:
+            assert caption in o.html().render()
+            assert caption in o.classic_md()
+            assert caption in o.slack_md()
 
     if not attach_rows and meta is not None:
         assert text_has_content(o.html().render())
