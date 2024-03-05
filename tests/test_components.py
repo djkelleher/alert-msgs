@@ -47,7 +47,7 @@ def test_table_render(caption, meta, attach_rows):
     def text_has_rows(text):
         return all(text_has_content(text, r) for r in rows)
 
-    o = Table(body=rows, title=caption, header=meta)
+    o = Table(rows=rows, title=caption, columns=meta)
 
     if attach_rows:
         filename, file = o.attach_rows_as_file()

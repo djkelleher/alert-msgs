@@ -39,7 +39,7 @@ def components():
         ),
         Map({f"TestKey{i}": f"TestValue{i}" for i in range(5)}),
         Table(
-            body=[
+            rows=[
                 {
                     "TestStrColumn": str(uuid4()),
                     "TestIntColumn": random.randint(0, 5),

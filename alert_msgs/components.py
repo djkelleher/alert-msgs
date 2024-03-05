@@ -74,7 +74,7 @@ class ContentType(Enum):
     ERROR = auto()
 
 
-def content_type_css_color(content_type: ContentType) -> str:
+def level_css_color(level: ContentType) -> str:
     """Get an appropriate CSS color for a given `ContentType`."""
     # TODO add this to settings.
     colors = {
@@ -83,7 +83,7 @@ def content_type_css_color(content_type: ContentType) -> str:
         ContentType.ERROR: "#C34A2C",
         ContentType.IMPORTANT: "#1967d3",
     }
-    return colors.get(content_type, colors[ContentType.INFO])
+    return colors.get(level, colors[ContentType.INFO])
 
 
 def font_size_css(font_size: FontSize) -> str:
@@ -108,58 +108,58 @@ class Text(MsgComp):
 
     def __init__(
         self,
-        content: str,
-        content_type: ContentType = ContentType.INFO,
+        value: str,
+        level: ContentType = ContentType.INFO,
         font_size: FontSize = FontSize.MEDIUM,
     ):
         """
         Args:
             content (str): The text that should be displayed in the component.
-            content_type (ContentType, optional): Type of text. Defaults to ContentType.INFO.
+            level (ContentType, optional): Type of text. Defaults to ContentType.INFO.
             font_size (FontSize, optional): Size of font. Defaults to FontSize.MEDIUM.
         """
-        self.content = str(content)
-        self.content_type = content_type
+        self.value = str(value)
+        self.level = level
         self.font_size = font_size
 
     def html(self) -> d.html_tag:
-        tag = self._content_tags[self.content_type]
+        tag = self._content_tags[self.level]
         return tag(
-            self.content,
-            style=f"font-size:{font_size_css(self.font_size)};color:{content_type_css_color(self.content_type)};",
+            self.value,
+            style=f"font-size:{font_size_css(self.font_size)};color:{level_css_color(self.level)};",
         )
 
     def classic_md(self) -> str:
         if self.font_size is FontSize.SMALL:
-            return self.content
+            return self.value
         if self.font_size is FontSize.MEDIUM:
-            return f"## {self.content}"
+            return f"## {self.value}"
         if self.font_size is FontSize.LARGE:
-            return f"# {self.content}"
+            return f"# {self.value}"
 
     def slack_md(self) -> str:
-        if self.content_type in (ContentType.IMPORTANT, ContentType.ERROR):
-            return f"*{self.content}*"
-        return self.content
+        if self.level in (ContentType.IMPORTANT, ContentType.ERROR):
+            return f"*{self.value}*"
+        return self.value
 
 
 class Map(MsgComp):
     """A component that displays formatted key/value pairs."""
 
-    def __init__(self, content: Dict[str, Any], inline: bool = False):
+    def __init__(self, data: Dict[str, Any], inline: bool = False):
         """
         Args:
-            content (Dict[str, Any]): The key/value pairs that should be displayed.
+            data (Dict[str, Any]): The key/value pairs that should be displayed.
             inline (bool, optional): Whether to put each field/value pair on its own line. Defaults to False.
         """
-        self.content = content
+        self.data = data
         # TODO automatic inlining based on text lengths.
         self.inline = inline
 
     def html(self) -> d.html_tag:
         kv_tag = d.span("\t") if self.inline else d.div
         with (container := d.div()):
-            for k, v in self.content.items():
+            for k, v in self.data.items():
                 kv_tag(
                     d.span(
                         d.b(
@@ -176,7 +176,7 @@ class Map(MsgComp):
 
     def classic_md(self) -> str:
         rows = ["|||", "|---:|:---|"]
-        for k, v in self.content.items():
+        for k, v in self.data.items():
             rows.append(f"|**{k}:**|{v}|")
         rows.append("|||")
         join_method = "\t" if self.inline else "\n"
@@ -184,7 +184,7 @@ class Map(MsgComp):
 
     def slack_md(self) -> str:
         join_method = "\t" if self.inline else "\n"
-        return join_method.join([f"*{k}:* {v}" for k, v in self.content.items()])
+        return join_method.join([f"*{k}:* {v}" for k, v in self.data.items()])
 
 
 class Table(MsgComp):
@@ -192,24 +192,24 @@ class Table(MsgComp):
 
     def __init__(
         self,
-        body: Sequence[Dict[str, Any]],
+        rows: Sequence[Dict[str, Any]],
         title: Optional[str] = None,
-        header: Optional[Sequence[str]] = None,
+        columns: Optional[Sequence[str]] = None,
     ):
         """
         Args:
-            body (Sequence[Dict[str, Any]]): Iterable of row dicts (column: value).
+            rows (Sequence[Dict[str, Any]]): Iterable of row dicts (column: value).
             title (Optional[str], optional): A title to display above the table body. Defaults to None.
-            header (Optional[Sequence[str]], optional): A list of column names. Defaults to None (will be inferred from body rows).
+            columns (Optional[Sequence[str]], optional): A list of column names. Defaults to None (will be inferred from body rows).
         """
-        self.body = [{k: str(v) for k, v in row.items()} for row in body]
+        self.rows = [{k: str(v) for k, v in row.items()} for row in rows]
         self.title = (
             Text(title, ContentType.IMPORTANT, FontSize.LARGE) if title else None
         )
-        self.header = (
-            list({c for row in self.body for c in row.keys()})
-            if header is None
-            else header
+        self.columns = (
+            list({c for row in self.rows for c in row.keys()})
+            if columns is None
+            else columns
         )
         self._attachment: Map = None
 
@@ -219,17 +219,17 @@ class Table(MsgComp):
         Returns:
             Tuple[str, StringIO]: Name of file and file object.
         """
-        stem = self.title.content[:50].replace(" ", "_") if self.title else "table"
-        body_id = xxh32(pickle.dumps(self.body)).hexdigest()
-        filename = f"{stem}_{body_id}.csv"
+        stem = self.title.value[:50].replace(" ", "_") if self.title else "table"
+        rows_id = xxh32(pickle.dumps(self.rows)).hexdigest()
+        filename = f"{stem}_{rows_id}.csv"
         file = StringIO()
-        writer = csv.DictWriter(file, fieldnames=self.header)
+        writer = csv.DictWriter(file, fieldnames=self.columns)
         writer.writeheader()
-        writer.writerows(self.body)
+        writer.writerows(self.rows)
         file.seek(0)
         self._attachment = Map({"Attachment": filename})
         # Don't render rows now that they're attached in a file.
-        self.body = None
+        self.rows = None
         return filename, file
 
     def html(self):
@@ -238,15 +238,15 @@ class Table(MsgComp):
                 self.title.html()
             if self._attachment:
                 self._attachment.html()
-            if self.body:
+            if self.rows:
                 with d.div():
                     with d.table():
                         with d.tr():
-                            for column in self.header:
+                            for column in self.columns:
                                 d.th(column)
-                        for row in self.body:
+                        for row in self.rows:
                             with d.tr():
-                                for column in self.header:
+                                for column in self.columns:
                                     d.td(row.get(column, ""))
         return container
 
@@ -256,18 +256,19 @@ class Table(MsgComp):
             data.append(self.title.classic_md())
         if self._attachment:
             data.append(self._attachment.classic_md())
-        if self.body:
-            table_rows = [self.header, [":----:" for _ in range(len(self.header))]] + [
-                [row[col] for col in self.header] for row in self.body
-            ]
+        if self.rows:
+            table_rows = [
+                self.columns,
+                [":----:" for _ in range(len(self.columns))],
+            ] + [[row[col] for col in self.columns] for row in self.rows]
             data.append("\n".join(["|".join(row) for row in table_rows]))
         return "\n\n".join(data).strip()
 
     def slack_md(self, float_format: str = ".3") -> str:
-        if not self.body:
+        if not self.rows:
             return ""
         columns = defaultdict(list)
-        for row in self.body:
+        for row in self.rows:
             for k, v in row.items():
                 columns[k].append(v)
         # Slack can't render very many rows in a single table.
@@ -279,7 +280,7 @@ class Table(MsgComp):
                 table.add_column(column, values[i : i + max_rows])
         data = []
         if self.title:
-            data.append(table_slices.pop(0).get_string(title=self.title.content))
+            data.append(table_slices.pop(0).get_string(title=self.title.value))
         for table in table_slices.values():
             if float_format:
                 table.float_format = float_format
