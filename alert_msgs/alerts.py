@@ -1,6 +1,6 @@
-from threading import Timer
-from time import time
-from typing import Sequence, Union
+import asyncio
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional, Sequence, Union
 
 from .components import MsgComp
 from .destinations import Email, Slack
@@ -11,25 +11,49 @@ from .utils import logger
 MsgDst = Union[Email, Slack]
 
 
-class BufferedAlerts:
+@dataclass
+class PeriodicMsgs:
+    send_to: Union[MsgDst, Sequence[MsgDst]]
+    msg_buffer: List[str] = field(default_factory=list)
+    on_pub_func: Optional[Callable] = None
+    header: Optional[str] = None
+
+    def publish(self, join_messages: bool = True):
+        if self.msg_buffer:
+            msg_buffer = [self.msg_buffer] if join_messages else self.msg_buffer
+            send_alert(msg_buffer, self.send_to)
+            self.msg_buffer.clear()
+        if self.on_pub_func:
+            self.on_pub_func()
+
+
+class PeriodicMsgSender:
     """Buffer alerts and concatenate into one message."""
 
-    def __init__(self, sleep_t: int = 10) -> None:
-        # TODO finish this. more advanced rate limiting. add identifier to alert groups (specified in constructor)
-        self.sleep_t = sleep_t
-        self._alerts_to_send = []
-        self._t_last_msg_sent = 0
+    def __init__(self) -> None:
+        self._periodic_msgs: Dict[int, List[PeriodicMsgs]] = {}
 
-    def send_alert(
-        self,
-        components: Sequence[MsgComp],
-        send_to: Union[MsgDst, Sequence[MsgDst]] = None,
-        **kwargs,
-    ):
-        if (t_remaining := (time() - self._t_last_msg_sent)) < self.sleep_t:
-            Timer(
-                t_remaining, send_alert, args=(components, send_to), kwargs=kwargs
-            ).start()
+    async def add_periodic_pub_group_member(self, config: PeriodicMsgs, pub_freq: int):
+        """
+        Add a function to call at specified frequency.
+
+        Args:
+            func (Callable): Function to call periodically.
+            pub_freq (int, optional): Publish frequency in minutes. Defaults to 5.
+        """
+        # (self._on_pnl_period, self._on_portfolio_period):
+        if pub_freq in self._periodic_msgs:
+            self._periodic_msgs[pub_freq].append(config)
+        else:
+            self._periodic_msgs[pub_freq] = [config]
+            asyncio.create_task(self._on_func_pub_period(pub_freq))
+
+    async def _on_func_pub_period(self, pub_freq: int):
+        cfgs = self._periodic_msgs[pub_freq]
+        for cfg in cfgs:
+            cfg.publish()
+        await asyncio.sleep(pub_freq)
+        asyncio.create_task(self._on_func_pub_period(pub_freq))
 
 
 def send_alert(
@@ -46,6 +70,8 @@ def send_alert(
     Returns:
         bool: Whether the message was sent successfully.
     """
+    if not content:
+        return False
     if not isinstance(send_to, (list, tuple)):
         send_to = [send_to]
     sent_ok = []
