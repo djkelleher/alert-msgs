@@ -24,6 +24,8 @@ def try_post_message(
     app: App, channel: str, text: str, mrkdwn: bool = True, retries: int = 1, **kwargs
 ):
     """Post a message to a slack channel, with retries."""
+    if not text:
+        return False
     for _ in range(retries + 1):
         resp = app.client.chat_postMessage(
             channel=channel, text=text, mrkdwn=mrkdwn, **kwargs
@@ -108,7 +110,7 @@ def send_slack_message(
     if not isinstance(content[0], (list, tuple)):
         if not subject:
             text = render_components_md(
-                components=content[0],
+                components=content,
                 slack_format=True,
             )
             return try_post_message(

@@ -1,7 +1,6 @@
-import sys
-from typing import Sequence
-
 from quicklogs import get_logger
+from typing import Sequence
+import sys
 
 logger = get_logger("alert-msgs", stdout=True)
 
