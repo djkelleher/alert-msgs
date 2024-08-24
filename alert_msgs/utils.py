@@ -33,6 +33,9 @@ class Emoji:
     rocket = "🚀"
     fire = "🔥"
     turtle = "🐢"
+    alarm_clock = "⏰"
+    clock = "🕒"
+
 
 
 def use_inline_tables(tables: Sequence["Table"], inline_tables_max_rows: int) -> bool:
