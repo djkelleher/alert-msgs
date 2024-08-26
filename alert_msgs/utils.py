@@ -2,7 +2,7 @@ from quicklogs import get_logger
 from typing import Sequence
 import sys
 
-logger = get_logger("alert-msgs", stdout=True)
+logger = get_logger("alert-msgs", terminal=True)
 
 
 def singleton(cls):
