@@ -21,7 +21,7 @@ Alerts can be sent to one or more Slack and/or Email destinations. See [destinat
 ### Examples
 
 ```python
-from alert_msgs import Email, Slack, ContentType, FontSize, Map, Text, Table, send_alert, send_slack_message, send_email
+from alert_msgs import EmailAddrs, SlackChannel, ContentType, FontSize, Map, Text, Table, send_alert, send_slack_message, send_email
 from uuid import uuid4
 import random
 
@@ -50,8 +50,8 @@ components = [
 ]
 
 send_to = [
-    Email(sender_addr="me@gmail.com", password="myemailpass", receiver_addr=["someone@gmail.com","someone2@gmail.com"]), 
-    Slack(bot_token="xoxb-34248928439763-6634233945735-KbePKXfstIRv6YN2tW5UF8tS", channel="my-channel")
+    EmailAddrs(sender_addr="me@gmail.com", password="myemailpass", receiver_addr=["someone@gmail.com","someone2@gmail.com"]), 
+    SlackChannel(bot_token="xoxb-34248928439763-6634233945735-KbePKXfstIRv6YN2tW5UF8tS", channel="my-channel")
 ]
 send_alert(components, subject="Test Alert",  send_to=send_to)
 ```

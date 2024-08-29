@@ -8,8 +8,8 @@ from io import StringIO
 from typing import Dict, Optional, Sequence
 
 from .components import MsgComp, Table, render_components_html
-from .destinations import Email
-from .utils import logger
+from .destinations import EmailAddrs
+from .utils import logger, settings
 
 
 def use_inline_tables(tables: Sequence["Table"], inline_tables_max_rows: int) -> bool:
@@ -52,7 +52,7 @@ def attach_tables(tables: Sequence["Table"], attachments_max_size_mb: int) -> bo
 
 def send_email(
     content: Sequence[MsgComp],
-    send_to: Email,
+    send_to: EmailAddrs,
     subject: str = "Alert From alert-msgs",
     retries: int = 1,
     **_,
@@ -62,7 +62,7 @@ def send_email(
 
     Args:
         content (Sequence[MsgComp]): Components used to construct the message.
-        send_to (Optional[Email]): How/where to send the message.
+        send_to (Optional[EmailAddrs]): How/where to send the message.
         subject (str, optional): Subject line. Defaults to "Alert From alert-msgs".
         retries (int, optional): Number of times to retry sending. Defaults to 1.
     Returns:
@@ -73,8 +73,8 @@ def send_email(
     attachment_tables = (
         dict([table.attach_rows_as_file() for table in tables])
         if len(tables)
-        and attach_tables(tables, send_to.attachment_max_size_mb)
-        and not use_inline_tables(tables, send_to.inline_tables_max_rows)
+        and attach_tables(tables, settings.email_attachment_max_size_mb)
+        and not use_inline_tables(tables, settings.email_inline_tables_max_rows)
         else {}
     )
     # generate HTML from components.

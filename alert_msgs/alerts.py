@@ -3,12 +3,12 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Sequence, Union
 
 from .components import MsgComp
-from .destinations import Email, Slack
+from .destinations import EmailAddrs, SlackChannel
 from .emails import send_email
 from .slack import send_slack_message
 from .utils import logger
 
-MsgDst = Union[Email, Slack]
+MsgDst = Union[EmailAddrs, SlackChannel]
 
 
 @dataclass
@@ -76,9 +76,9 @@ def send_alert(
         send_to = [send_to]
     sent_ok = []
     for st in send_to:
-        if isinstance(st, Slack):
+        if isinstance(st, SlackChannel):
             sent_ok.append(send_slack_message(content=content, send_to=st, **kwargs))
-        elif isinstance(st, Email):
+        elif isinstance(st, EmailAddrs):
             sent_ok.append(send_email(content=content, send_to=st, **kwargs))
         else:
             logger.error(

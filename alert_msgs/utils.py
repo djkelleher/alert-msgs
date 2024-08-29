@@ -1,8 +1,23 @@
-from quicklogs import get_logger
-from typing import Sequence
 import sys
+from typing import Sequence
+
+from pydantic import PositiveInt
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from quicklogs import get_logger
 
 logger = get_logger("alert-msgs", terminal=True)
+
+
+class Settings(BaseSettings):
+    email_attachment_max_size_mb: PositiveInt = 20
+    email_inline_tables_max_rows: PositiveInt = 2000
+    slack_attachment_max_size_mb: PositiveInt = 20
+    slack_inline_tables_max_rows: PositiveInt = 200
+
+    model_config = SettingsConfigDict(env_prefix="alert_msgs_")
+
+
+settings = Settings()
 
 
 def singleton(cls):
@@ -34,7 +49,6 @@ class Emoji:
     turtle = "🐢"
     alarm_clock = "⏰"
     clock = "🕒"
-
 
 
 def use_inline_tables(tables: Sequence["Table"], inline_tables_max_rows: int) -> bool:

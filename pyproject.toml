@@ -1,6 +1,6 @@
 [project]
 name = "alert_msgs"
-version = "0.6.1"
+version = "0.7.1"
 description = "Easily construct and send formatted emails and Slack alerts."
 authors = [{ name = "Dan Kelleher", email = "kelleherjdan@gmail.com" }]
 license = { text = "MIT" }

@@ -10,7 +10,7 @@ from slack_bolt import App
 from toolz import partition_all
 
 from .components import MsgComp, render_components_md
-from .destinations import Slack
+from .destinations import SlackChannel
 from .utils import logger
 
 
@@ -40,7 +40,7 @@ def try_post_message(
 
 def send_slack_message(
     content: Union[Sequence[MsgComp], Sequence[Sequence[MsgComp]]],
-    send_to: Slack,
+    send_to: SlackChannel,
     retries: int = 1,
     subject: Optional[str] = None,
     attachment_files: Optional[Sequence[Union[str, Path]]] = None,
