@@ -3,9 +3,10 @@ from typing import Sequence
 
 from pydantic import PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from quicklogs import get_logger
 
-logger = get_logger("alert-msgs", terminal=True)
+logger = get_logger("alert-msgs")
 
 
 class Settings(BaseSettings):
