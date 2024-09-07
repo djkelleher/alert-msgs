@@ -3,7 +3,6 @@ from typing import Sequence
 
 from pydantic import PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from quicklogs import get_logger
 
 logger = get_logger("alert-msgs")
@@ -21,16 +20,11 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-def singleton(cls):
-    return cls()
-
-
 def as_code_block(text: str) -> str:
     """Format text as code block."""
     return "```\n" + text + "\n```"
 
 
-@singleton
 class Emoji:
     # there is no green up arrow :(
     red_down_arrow = "🔻"
